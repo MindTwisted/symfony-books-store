@@ -10,11 +10,11 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use App\Entity\Author;
-use App\Form\AuthorType;
+use App\Entity\Genre;
+use App\Form\GenreType;
 use App\Serializer\FormErrorSerializer;
 
-class AuthorController extends AbstractController
+class GenreController extends AbstractController
 {
     protected $serializer;
 
@@ -27,13 +27,13 @@ class AuthorController extends AbstractController
     }
 
     /**
-     * @Route("/api/authors", name="api.authors.index", methods={"GET"})
+     * @Route("/api/genres", name="api.genres.index", methods={"GET"})
      */
     public function index(Request $request): JsonResponse
     {
         $offset = $request->get('offset', 0);
-        $authors = $this->getDoctrine()
-            ->getRepository(Author::class)
+        $genres = $this->getDoctrine()
+            ->getRepository(Genre::class)
             ->findBy(
                 [],
                 null,
@@ -41,7 +41,7 @@ class AuthorController extends AbstractController
                 $offset
             );
 
-        $authorsNormalized = $this->serializer->normalize($authors, null, [
+        $genresNormalized = $this->serializer->normalize($genres, null, [
             'attributes' => ['id', 'name']
         ]);
 
@@ -49,21 +49,21 @@ class AuthorController extends AbstractController
             [
                 'status' => 'success',
                 'message' => [
-                    'data' => $authorsNormalized
+                    'data' => $genresNormalized
                 ]
             ]
         );
     }
 
     /**
-     * @Route("/api/authors/{id}", name="api.authors.show", methods={"GET"}, requirements={"id"="\d+"})
+     * @Route("/api/genres/{id}", name="api.genres.show", methods={"GET"}, requirements={"id"="\d+"})
      */
     public function show(
-        Author $author, 
+        Genre $genre, 
         Request $request
     ): JsonResponse
     {
-        $authorNormalized = $this->serializer->normalize($author, null, [
+        $genreNormalized = $this->serializer->normalize($genre, null, [
             'attributes' => ['id', 'name']
         ]);
 
@@ -71,14 +71,14 @@ class AuthorController extends AbstractController
             [
                 'status' => 'success',
                 'message' => [
-                    'data' => $authorNormalized
+                    'data' => $genreNormalized
                 ]
             ]
         );
     }
 
     /**
-     * @Route("/api/authors", name="api.authors.store", methods={"POST"})
+     * @Route("/api/genres", name="api.genres.store", methods={"POST"})
      */
     public function store(
         Request $request,
@@ -86,8 +86,8 @@ class AuthorController extends AbstractController
     ): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $author = new Author();
-        $form = $this->createForm(AuthorType::class, $author);
+        $genre = new Genre();
+        $form = $this->createForm(GenreType::class, $genre);
         
         $form->submit($data);
 
@@ -103,17 +103,17 @@ class AuthorController extends AbstractController
         }
         
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($author);
+        $entityManager->persist($genre);
         $entityManager->flush();
 
         return new JsonResponse(
             [
                 'status' => 'success',
                 'message' => [
-                    'text' => "Author was successfully added.",
+                    'text' => "Genre was successfully added.",
                     'data' => [
-                        'id' => $author->getId(),
-                        'name' => $author->getName()
+                        'id' => $genre->getId(),
+                        'name' => $genre->getName()
                     ]
                 ]
             ]
@@ -121,16 +121,16 @@ class AuthorController extends AbstractController
     }
 
     /**
-     * @Route("/api/authors/{id}", name="api.authors.update", methods={"PUT"}, requirements={"id"="\d+"})
+     * @Route("/api/genres/{id}", name="api.genres.update", methods={"PUT"}, requirements={"id"="\d+"})
      */
     public function update(
-        Author $author, 
+        Genre $genre, 
         Request $request,
         FormErrorSerializer $serializer
     ): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        $form = $this->createForm(AuthorType::class, $author);
+        $form = $this->createForm(GenreType::class, $genre);
         
         $form->submit($data);
 
@@ -146,17 +146,17 @@ class AuthorController extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($author);
+        $entityManager->persist($genre);
         $entityManager->flush();
 
         return new JsonResponse(
             [
                 'status' => 'success',
                 'message' => [
-                    'text' => "Author was successfully updated.",
+                    'text' => "Genre was successfully updated.",
                     'data' => [
-                        'id' => $author->getId(),
-                        'name' => $author->getName()
+                        'id' => $genre->getId(),
+                        'name' => $genre->getName()
                     ]
                 ]
             ]
@@ -164,24 +164,24 @@ class AuthorController extends AbstractController
     }
 
     /**
-     * @Route("/api/authors/{id}", name="api.authors.destroy", methods={"DELETE"}, requirements={"id"="\d+"})
+     * @Route("/api/genres/{id}", name="api.genres.destroy", methods={"DELETE"}, requirements={"id"="\d+"})
      */
     public function destroy(
-        Author $author, 
+        Genre $genre, 
         Request $request
     ): JsonResponse
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($author);
+        $entityManager->remove($genre);
         $entityManager->flush();
 
         return new JsonResponse(
             [
                 'status' => 'success',
                 'message' => [
-                    'text' => "Author was successfully deleted.",
+                    'text' => "Genre was successfully deleted.",
                     'data' => [
-                        'name' => $author->getName()
+                        'name' => $genre->getName()
                     ]
                 ]
             ]
