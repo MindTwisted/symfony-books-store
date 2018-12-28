@@ -78,6 +78,39 @@ class GenreController extends AbstractController
     }
 
     /**
+     * @Route("/api/genres/{id}/books", name="api.genres.showBooks", methods={"GET"}, requirements={"id"="\d+"})
+     */
+    public function showBooks(
+        Genre $genre, 
+        Request $request
+    ): JsonResponse
+    {
+        $books = $genre->getBooks();
+
+        $booksNormalized = $this->serializer->normalize($books, null, [
+            'attributes' => [
+                'id', 
+                'title', 
+                'description', 
+                'imagePath', 
+                'price', 
+                'discount', 
+                'author' => ['id', 'name'],
+                'genre' => ['id', 'name']
+            ]
+        ]);
+
+        return new JsonResponse(
+            [
+                'status' => 'success',
+                'message' => [
+                    'data' => $booksNormalized
+                ]
+            ]
+        );
+    }
+
+    /**
      * @Route("/api/genres", name="api.genres.store", methods={"POST"})
      */
     public function store(

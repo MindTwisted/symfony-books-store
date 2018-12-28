@@ -78,6 +78,39 @@ class AuthorController extends AbstractController
     }
 
     /**
+     * @Route("/api/authors/{id}/books", name="api.authors.showBooks", methods={"GET"}, requirements={"id"="\d+"})
+     */
+    public function showBooks(
+        Author $author, 
+        Request $request
+    ): JsonResponse
+    {
+        $books = $author->getBooks();
+
+        $booksNormalized = $this->serializer->normalize($books, null, [
+            'attributes' => [
+                'id', 
+                'title', 
+                'description', 
+                'imagePath', 
+                'price', 
+                'discount', 
+                'author' => ['id', 'name'],
+                'genre' => ['id', 'name']
+            ]
+        ]);
+
+        return new JsonResponse(
+            [
+                'status' => 'success',
+                'message' => [
+                    'data' => $booksNormalized
+                ]
+            ]
+        );
+    }
+
+    /**
      * @Route("/api/authors", name="api.authors.store", methods={"POST"})
      */
     public function store(
