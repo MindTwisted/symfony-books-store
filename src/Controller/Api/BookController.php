@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -110,6 +111,7 @@ class BookController extends AbstractController
 
     /**
      * @Route("/api/books", name="api.books.store", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function store(
         Request $request,
@@ -156,6 +158,7 @@ class BookController extends AbstractController
 
     /**
      * @Route("/api/books/{id}/image", name="api.books.storeImage", methods={"POST"}, requirements={"id"="\d+"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function storeImage(
         Book $book,
@@ -221,6 +224,7 @@ class BookController extends AbstractController
 
     /**
      * @Route("/api/books/{id}", name="api.books.update", methods={"PUT"}, requirements={"id"="\d+"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function update(
         Book $book,
@@ -267,6 +271,7 @@ class BookController extends AbstractController
 
     /**
      * @Route("/api/books/{id}", name="api.books.destroy", methods={"DELETE"}, requirements={"id"="\d+"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function destroy(
         Book $book, 

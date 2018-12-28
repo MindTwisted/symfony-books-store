@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -112,6 +113,7 @@ class AuthorController extends AbstractController
 
     /**
      * @Route("/api/authors", name="api.authors.store", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function store(
         Request $request,
@@ -155,6 +157,7 @@ class AuthorController extends AbstractController
 
     /**
      * @Route("/api/authors/{id}", name="api.authors.update", methods={"PUT"}, requirements={"id"="\d+"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function update(
         Author $author, 
@@ -198,6 +201,7 @@ class AuthorController extends AbstractController
 
     /**
      * @Route("/api/authors/{id}", name="api.authors.destroy", methods={"DELETE"}, requirements={"id"="\d+"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function destroy(
         Author $author, 

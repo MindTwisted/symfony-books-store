@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -112,6 +113,7 @@ class GenreController extends AbstractController
 
     /**
      * @Route("/api/genres", name="api.genres.store", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function store(
         Request $request,
@@ -155,6 +157,7 @@ class GenreController extends AbstractController
 
     /**
      * @Route("/api/genres/{id}", name="api.genres.update", methods={"PUT"}, requirements={"id"="\d+"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function update(
         Genre $genre, 
@@ -198,6 +201,7 @@ class GenreController extends AbstractController
 
     /**
      * @Route("/api/genres/{id}", name="api.genres.destroy", methods={"DELETE"}, requirements={"id"="\d+"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function destroy(
         Genre $genre, 
