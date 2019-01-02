@@ -11,7 +11,6 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Entity\Book;
 use App\Form\BookType;
@@ -83,7 +82,7 @@ class BookController extends AbstractController
 
         if (!$book)
         {
-            throw new NotFoundHttpException("Book with id $id doesn't exist.");
+            throw $this->createNotFoundException("Book with id $id doesn't exist.");
         }
 
         $bookNormalized = $this->serializer->normalize($book, null, [

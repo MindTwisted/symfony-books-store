@@ -23,7 +23,7 @@ class Book
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\NotBlank
      * @Assert\Regex(pattern="/^[a-zA-Z0-9\s]+$/", message="This value may only contain letters, numbers and spaces.")
      */
