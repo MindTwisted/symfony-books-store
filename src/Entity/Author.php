@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -15,6 +15,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class Author
 {
+    use TimestampableEntity;
+    
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -27,22 +29,6 @@ class Author
      * @Assert\NotBlank
      */
     private $name;
-
-    /**
-     * @var \DateTime $created
-     *
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime")
-     */
-    private $created;
-
-    /**
-     * @var \DateTime $updated
-     *
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(type="datetime")
-     */
-    private $updated;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Book", mappedBy="author")
@@ -69,16 +55,6 @@ class Author
         $this->name = $name;
 
         return $this;
-    }
-
-    public function getCreated(): ?\DateTimeInterface
-    {
-        return $this->created;
-    }
-
-    public function getUpdated(): ?\DateTimeInterface
-    {
-        return $this->updated;
     }
 
     /**
