@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,6 +20,11 @@ class SecurityController extends AbstractController
     public function login(Request $request)
     {
         $user = $this->getUser();
+        $user->setApiToken(md5(random_bytes(10)));
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->flush();
 
         return new JsonResponse(
             [
@@ -85,6 +91,7 @@ class SecurityController extends AbstractController
 
     /**
      * @Route("/api/me", name="api.me", methods={"GET"})
+     * @IsGranted("ROLE_USER")
      */
     public function getAuthenticatedUser(Request $request)
     {
