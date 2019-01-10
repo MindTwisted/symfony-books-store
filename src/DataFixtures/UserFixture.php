@@ -15,7 +15,6 @@ class UserFixture extends BaseFixture
             $user->setEmail(sprintf('user%d@example.com', $i));
             $user->setPassword($this->passwordEncoder->encodePassword($user, 'secret'));
             $user->setApiToken(md5(random_bytes(10)));
-            $user->setRoles(['ROLE_USER']);
 
             return $user;
         });
@@ -26,7 +25,7 @@ class UserFixture extends BaseFixture
             $user->setEmail(sprintf('admin%d@example.com', $i));
             $user->setPassword($this->passwordEncoder->encodePassword($user, 'secret'));
             $user->setApiToken(md5(random_bytes(10)));
-            $user->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
+            $user->setRoles(['ROLE_ADMIN']);
 
             return $user;
         });

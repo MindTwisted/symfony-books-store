@@ -55,11 +55,6 @@ class User implements UserInterface
      */
     private $apiToken;
 
-    public function __construct()
-    {
-        $this->roles = array('ROLE_USER');
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -89,7 +84,11 @@ class User implements UserInterface
 
     public function getRoles(): ?array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+        
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): self
