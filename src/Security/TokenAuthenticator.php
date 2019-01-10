@@ -2,7 +2,7 @@
 
 namespace App\Security;
 
-use App\Entity\User;
+use App\Entity\ApiToken;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class TokenAuthenticator extends AbstractGuardAuthenticator
@@ -29,7 +30,8 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function supports(Request $request)
     {
-        return $request->headers->has('X-AUTH-TOKEN');
+        return $request->headers->has('Authorization')
+            && 0 === strpos($request->headers->get('Authorization'), 'Bearer ');
     }
 
     /**
@@ -38,22 +40,35 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function getCredentials(Request $request)
     {
-        return array(
-            'token' => $request->headers->get('X-AUTH-TOKEN'),
-        );
+        $authorizationHeader = $request->headers->get('Authorization');
+        
+        // skip beyond "Bearer "
+        return [
+            'token' => substr($authorizationHeader, 7)
+        ];
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        $apiToken = $credentials['token'];
+        $token = $this->em->getRepository(ApiToken::class)->findOneBy([
+            'token' => $credentials['token']
+        ]);
 
-        if (null === $apiToken) {
-            return;
+        if (!$token)
+        {
+            throw new CustomUserMessageAuthenticationException(
+                'Invalid API token'
+            );
         }
 
-        // if a User object, checkCredentials() is called
-        return $this->em->getRepository(User::class)
-            ->findOneBy(['apiToken' => $apiToken]);
+        if ($token->isExpired()) 
+        {
+            throw new CustomUserMessageAuthenticationException(
+                'Token expired'
+            );
+        }
+
+        return $token->getUser();
     }
 
     public function checkCredentials($credentials, UserInterface $user)

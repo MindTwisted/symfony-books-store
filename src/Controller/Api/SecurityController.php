@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Entity\User;
+use App\Entity\ApiToken;
 use App\Form\UserType;
 use App\Serializer\FormErrorSerializer;
 
@@ -20,10 +21,10 @@ class SecurityController extends AbstractController
     public function login(Request $request)
     {
         $user = $this->getUser();
-        $user->setApiToken(md5(random_bytes(10)));
+        $apiToken = new ApiToken($user);
 
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($user);
+        $entityManager->persist($apiToken);
         $entityManager->flush();
 
         return new JsonResponse(
@@ -32,7 +33,7 @@ class SecurityController extends AbstractController
                 'message' => [
                     'text' => "User {$user->getName()} was successfully logged in.",
                     'data' => [
-                        'token' => $user->getApiToken()
+                        'token' => $apiToken->getToken()
                     ]
                 ]
             ]
@@ -68,7 +69,6 @@ class SecurityController extends AbstractController
         $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
 
         $user->setPassword($password);
-        $user->setApiToken(md5(random_bytes(10)));
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($user);
@@ -82,7 +82,7 @@ class SecurityController extends AbstractController
                     'data' => [
                         'name' => $user->getName(),
                         'email' => $user->getEmail(),
-                        'token' => $user->getApiToken()
+                        'roles' => $user->getRoles()
                     ]
                 ]
             ]

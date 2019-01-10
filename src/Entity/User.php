@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -51,9 +53,14 @@ class User implements UserInterface
     private $name;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\ApiToken", mappedBy="user", orphanRemoval=true)
      */
-    private $apiToken;
+    private $apiTokens;
+
+    public function __construct()
+    {
+        $this->apiTokens = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -149,14 +156,33 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getApiToken(): ?string
+    /**
+     * @return Collection|ApiToken[]
+     */
+    public function getApiTokens(): Collection
     {
-        return $this->apiToken;
+        return $this->apiTokens;
     }
 
-    public function setApiToken(string $apiToken): self
+    public function addApiToken(ApiToken $apiToken): self
     {
-        $this->apiToken = $apiToken;
+        if (!$this->apiTokens->contains($apiToken)) {
+            $this->apiTokens[] = $apiToken;
+            $apiToken->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApiToken(ApiToken $apiToken): self
+    {
+        if ($this->apiTokens->contains($apiToken)) {
+            $this->apiTokens->removeElement($apiToken);
+            // set the owning side to null (unless already changed)
+            if ($apiToken->getUser() === $this) {
+                $apiToken->setUser(null);
+            }
+        }
 
         return $this;
     }
